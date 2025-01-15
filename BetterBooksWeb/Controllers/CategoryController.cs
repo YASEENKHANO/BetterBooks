@@ -1,26 +1,31 @@
-﻿using BetterBooksWeb.Data;
-using BetterBooksWeb.Models;
+﻿using BetterBooks;
+using BetterBooks.DataAccess;
+using BetterBooks.DataAccess.Repository;
+using BetterBooks.DataAccess.Repository.IRepository;
+using BetterBooks.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BetterBooksWeb.Controllers
+namespace BetterBooks.Controllers
 {
     
 
     public class CategoryController : Controller
     {
-        
-        private readonly ApplicationDbContext _db;
 
-        public CategoryController(ApplicationDbContext db)
+        // private readonly ApplicationDbContext _db;
+        // private readonly ICategoryRepository _db; //added the service in program.cs
+       
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-               _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-           // var ObjCategoryList= _db.Categories.ToList();
-           //we can use IEnumerable for the same type of data, it is strong typed and we do not need Now to convert it to list so remove it also...
-            IEnumerable<Category> ObjCategoryList= _db.Categories;
+            // var ObjCategoryList= _db.Categories.ToList();
+            //we can use IEnumerable for the same type of data, it is strong typed and we do not need Now to convert it to list so remove it also...
+            IEnumerable<Category> ObjCategoryList= _unitOfWork.Category.GetAll();
 
 
             return View(ObjCategoryList);
@@ -47,8 +52,8 @@ namespace BetterBooksWeb.Controllers
             }
             if (ModelState.IsValid)//model state will check wheather the required fields are populated or not
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Add(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category Created Successfully!";
                 return RedirectToAction("Index");
             }
@@ -65,17 +70,17 @@ namespace BetterBooksWeb.Controllers
                
             }
 
-            var categoryFromDB = _db.Categories.Find(id);//it will try to find it
+          //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
-           // var categoryFromDBFirst = _db.Categories.FirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
+            var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
           //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
-            if (categoryFromDB == null) { 
+            if (categoryFromDBFirst == null) { 
             
              return NotFound();
             }
 
-            return View(categoryFromDB);
+            return View(categoryFromDBFirst);
         }
 
 
@@ -90,8 +95,8 @@ namespace BetterBooksWeb.Controllers
             }
             if (ModelState.IsValid)//model state will check wheather the required fields are populated or not
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Update(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category Updated Successfully!";
                 return RedirectToAction("Index");
             }
@@ -111,18 +116,18 @@ namespace BetterBooksWeb.Controllers
 
             }
 
-            var categoryFromDB = _db.Categories.Find(id);//it will try to find it
+          //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
-            // var categoryFromDBFirst = _db.Categories.FirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
+             var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
             //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
-            if (categoryFromDB == null)
+            if (categoryFromDBFirst == null)
             {
 
                 return NotFound();
             }
 
-            return View(categoryFromDB);
+            return View(categoryFromDBFirst);
         }
 
 
@@ -146,14 +151,17 @@ namespace BetterBooksWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
-            var obj= _db.Categories.Find(id);
+            //var obj= _db.Categories.Find(id); before repository pattern
+
+            var obj = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
             if (obj == null) {
 
                 return NotFound();
             }
 
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
+            // _db.Remove(obj);
+            _unitOfWork.Category.Delete(obj);
+            _unitOfWork.Save();
             TempData["success"] = "Category deleted Successfully!";
             return RedirectToAction("Index");
 

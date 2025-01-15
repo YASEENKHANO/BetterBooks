@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BetterBooksWeb.Models
+namespace BetterBooks.Models
 {
     public class Category
     {
@@ -11,7 +11,7 @@ namespace BetterBooksWeb.Models
         public string Name { get; set; }
 
         [DisplayName("Display Order")]
-        [Range(1,100,ErrorMessage ="The Order must be between 1 and 100")]
+        [Range(1, 100, ErrorMessage = "The Order must be between 1 and 100")]
         public int DisplayOrder { get; set; }
 
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;//current date time

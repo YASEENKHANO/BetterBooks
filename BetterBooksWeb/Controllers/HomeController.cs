@@ -1,8 +1,9 @@
 using System.Diagnostics;
-using BetterBooksWeb.Models;
+using System.Net.Http.Headers;
+using BetterBooks.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BetterBooksWeb.Controllers
+namespace BetterBooks.Controllers
 {
     public class HomeController : Controller
     {
@@ -17,6 +18,8 @@ namespace BetterBooksWeb.Controllers
         {
             return View();
         }
+
+       
 
         public IActionResult Privacy()
         {

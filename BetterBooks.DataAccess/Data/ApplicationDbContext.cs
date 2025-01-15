@@ -1,7 +1,7 @@
-﻿using BetterBooksWeb.Models;
+﻿using BetterBooks.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BetterBooksWeb.Data
+namespace BetterBooks.DataAccess
 {
     public class ApplicationDbContext: DbContext
     {
@@ -15,6 +15,7 @@ namespace BetterBooksWeb.Data
 
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CoverType> CoverTypes { get; set; }
 
     }
 }
