@@ -1,20 +1,19 @@
-﻿using BetterBooks;
-using BetterBooks.DataAccess;
+﻿using BetterBooks.DataAccess;
 using BetterBooks.DataAccess.Repository;
 using BetterBooks.DataAccess.Repository.IRepository;
 using BetterBooks.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BetterBooks.Controllers
+namespace BetterBooksWeb.Areas.Admin.Controllers
 {
-    
 
+    [Area("Admin")] // explicitly specifying the controller route
     public class CategoryController : Controller
     {
 
         // private readonly ApplicationDbContext _db;
         // private readonly ICategoryRepository _db; //added the service in program.cs
-       
+
         private readonly IUnitOfWork _unitOfWork;
         public CategoryController(IUnitOfWork unitOfWork)
         {
@@ -25,7 +24,7 @@ namespace BetterBooks.Controllers
         {
             // var ObjCategoryList= _db.Categories.ToList();
             //we can use IEnumerable for the same type of data, it is strong typed and we do not need Now to convert it to list so remove it also...
-            IEnumerable<Category> ObjCategoryList= _unitOfWork.Category.GetAll();
+            IEnumerable<Category> ObjCategoryList = _unitOfWork.Category.GetAll();
 
 
             return View(ObjCategoryList);
@@ -33,7 +32,7 @@ namespace BetterBooks.Controllers
 
 
 
-       //Get
+        //Get
         public IActionResult Create()
         {
 
@@ -47,7 +46,8 @@ namespace BetterBooks.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
-            if (obj.Name==obj.DisplayOrder.ToString()) {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
                 ModelState.AddModelError("name", "DisplayOrder should not match DisplayName");//the error message works as key value pairs
             }
             if (ModelState.IsValid)//model state will check wheather the required fields are populated or not
@@ -64,20 +64,21 @@ namespace BetterBooks.Controllers
         //Get
         public IActionResult Edit(int? id)
         {
-            if(id==null || id==0)
+            if (id == null || id == 0)
             {
                 return NotFound();
-               
+
             }
 
-          //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
+            //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
-            var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
-          //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
+            var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
+                                                                                              //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
-            if (categoryFromDBFirst == null) { 
-            
-             return NotFound();
+            if (categoryFromDBFirst == null)
+            {
+
+                return NotFound();
             }
 
             return View(categoryFromDBFirst);
@@ -116,9 +117,9 @@ namespace BetterBooks.Controllers
 
             }
 
-          //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
+            //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
-             var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x =>x.Id==id);//it will fetch the first record and check with our given record 'id', 
+            var categoryFromDBFirst = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
             //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
             if (categoryFromDBFirst == null)
@@ -147,14 +148,15 @@ namespace BetterBooks.Controllers
         //OTHER WAY OF DOING IT IS 
 
         ////Post
-        [HttpPost,ActionName("Delete")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
             //var obj= _db.Categories.Find(id); before repository pattern
 
             var obj = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
-            if (obj == null) {
+            if (obj == null)
+            {
 
                 return NotFound();
             }

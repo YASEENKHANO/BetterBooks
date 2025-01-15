@@ -2,8 +2,9 @@
 using BetterBooks.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BetterBooksWeb.Controllers
+namespace BetterBooksWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CoverTypesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -46,7 +47,7 @@ namespace BetterBooksWeb.Controllers
             {
                 _unitOfWork.CoverType.Add(obj);
                 _unitOfWork.Save();
-                TempData["success"] = "Category Created Successfully!";
+                TempData["success"] = "CoverType Created Successfully!";
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -65,7 +66,7 @@ namespace BetterBooksWeb.Controllers
             //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
             var CoverTypeFromDBFirst = _unitOfWork.CoverType.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
-                                                                                              //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
+                                                                                                //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
             if (CoverTypeFromDBFirst == null)
             {
@@ -83,12 +84,12 @@ namespace BetterBooksWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(CoverType obj)
         {
-           
+
             if (ModelState.IsValid)//model state will check wheather the required fields are populated or not
             {
                 _unitOfWork.CoverType.Update(obj);
                 _unitOfWork.Save();
-                TempData["success"] = "Category Updated Successfully!";
+                TempData["success"] = "CoverType Updated Successfully!";
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -145,7 +146,7 @@ namespace BetterBooksWeb.Controllers
             // _db.Remove(obj);
             _unitOfWork.CoverType.Delete(obj);
             _unitOfWork.Save();
-            TempData["success"] = "Category deleted Successfully!";
+            TempData["success"] = "CoverType deleted Successfully!";
             return RedirectToAction("Index");
 
         }

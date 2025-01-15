@@ -3,8 +3,9 @@ using System.Net.Http.Headers;
 using BetterBooks.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BetterBooks.Controllers
+namespace BetterBooksWeb.Areas.Customer.Controllers
 {
+    [Area("Customer")] // explicitly specifying the controller route
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -19,7 +20,7 @@ namespace BetterBooks.Controllers
             return View();
         }
 
-       
+
 
         public IActionResult Privacy()
         {
