@@ -13,7 +13,7 @@ namespace BetterBooks.Models
         [DisplayName("Display Order")]
         [Range(1, 100, ErrorMessage = "The Order must be between 1 and 100")]
         public int DisplayOrder { get; set; }
-
+        //Checking username/email for commit only
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;//current date time
     }
 }
