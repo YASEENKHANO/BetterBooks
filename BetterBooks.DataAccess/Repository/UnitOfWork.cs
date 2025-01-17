@@ -11,6 +11,7 @@ namespace BetterBooks.DataAccess.Repository
     {
         public ICategoryRepository Category { get; private set; }
         public ICoverTypeRepository CoverType { get; private set; }
+        public IProductRepository Product { get; private set; }
 
         private ApplicationDbContext _db;
 
@@ -21,6 +22,8 @@ namespace BetterBooks.DataAccess.Repository
             Category = new CategoryRepository(_db);
 
             CoverType = new CoverTypeRepository(_db);//for cover type
+
+            Product = new ProductRepository(_db);
         }
        
         public void Save()

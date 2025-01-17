@@ -1,0 +1,40 @@
+﻿
+<partial name="_Notification"></partial>
+
+
+<div class="container p-3">
+    <div class="row pt-4">
+
+
+        <div class="col-6">
+            <h2 class="text-primary">Product list</h2>
+        </div>
+
+
+        <div class="col-6 text-end">
+            <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary"><span><i class="bi bi-plus-circle"></i></span> &nbsp; Add New Product</a>
+        </div>
+
+    </div>
+
+    <br />
+    <br />
+
+
+    <table class="table-striped table-bordered table" style="width:100%">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>ISBN</th>
+                <th>Price</th>
+                <th>Author</th>
+                <th>Category</th>
+
+
+            </tr>
+        </thead>
+       
+    </table>
+</div>
+
+

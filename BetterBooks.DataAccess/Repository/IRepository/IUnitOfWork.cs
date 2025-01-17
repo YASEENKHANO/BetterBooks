@@ -10,6 +10,7 @@ namespace BetterBooks.DataAccess.Repository.IRepository
     {
         ICategoryRepository Category { get; } //implementing all the repos here
         ICoverTypeRepository CoverType { get; } //implementing all the repos here
+        IProductRepository Product { get; } //implementing all the repos here
 
         void Save(); //method which is needed global
         
