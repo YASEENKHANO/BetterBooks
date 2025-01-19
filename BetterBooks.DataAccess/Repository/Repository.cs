@@ -16,6 +16,8 @@ namespace BetterBooks.DataAccess.Repository
         public Repository(ApplicationDbContext db)
         {
             _db = db;
+           // _db.Products.Include(x => x.Category).Include(x => x.CoverType); //navigation property of category to be loaded
+
             this.dbSet= _db.Set<T>();//implementing solid repository
         }
 
@@ -40,20 +42,44 @@ namespace BetterBooks.DataAccess.Repository
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> GetAll()
+        //includeProp - "Category,Covertype"
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
+
+            //for include prop
+            if(includeProperties != null)
+            {
+                //if it having something split it
+                foreach(var includeProp in includeProperties.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries)){
+
+                    query = query.Include(includeProp);//one at a time
+
+                }
+            }
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
 
             IQueryable<T> query = dbSet;
 
+
+
             query = query.Where(filter);
 
-             
+            if (includeProperties != null)
+            {
+                //if it having something split it
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+
+                    query = query.Include(includeProp);//one at a time
+
+                }
+            }
+
             return query.FirstOrDefault();
         }
     }

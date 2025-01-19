@@ -12,8 +12,8 @@ namespace BetterBooks.DataAccess.Repository.IRepository
         //This is A Generic repository
         // T suppose for now is Category
 
-        T GetFirstOrDefault(Expression<Func<T, bool>> filter);
-        IEnumerable<T> GetAll();
+        T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        IEnumerable<T> GetAll(string? includeProperties = null);
 
         void Add(T entity);
        // void Update(T entity);
