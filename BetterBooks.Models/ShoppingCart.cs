@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace BetterBooks.Models
 {
-    internal class ShoppingCart
+    public class ShoppingCart
     {
-      //  public Property Property { get; set; }
         
-        
-        [Range(1,1000,ErrorMessage ="")]
+        public Product Product { get; set; }
+
+        [Range(1, 1000, ErrorMessage = "Enter a value between 1 and 1000")]
         public int Count { get; set; }
     }
 }
