@@ -38,21 +38,6 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
         }
 
 
-        //Post
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Create(Product obj)
-        //{
-
-        //    if (ModelState.IsValid)//model state will check wheather the required fields are populated or not
-        //    {
-        //        _unitOfWork.Product.Add(obj);
-        //        _unitOfWork.Save();
-        //        TempData["success"] = "Product Created Successfully!";
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(obj);
-        //}
 
         //Upsert method will be the combination of Update + Insert
         //Get
@@ -78,7 +63,6 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
 
             };
 
-
             if (id == null || id == 0)
             {
                 //Create new Product logic here
@@ -87,25 +71,18 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
                 //ViewData["CoverTypeList"] = CoverTypeList;
 
 
-
-
-
-
-
-
                 return View(productVM);
 
             }
             else
             {
                 //Update product here
+               // productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u=> u.Id == id);
+                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
 
-
-
+                return View(productVM);
             }
 
-
-            return View(productVM);
         }
 
 
@@ -124,8 +101,20 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
                 {
                     string fileName = Guid.NewGuid().ToString();
 
-                    var uploads = Path.Combine(wwwRootPath, @"images\products");
+                    var uploads = Path.Combine(wwwRootPath, @"images\products\");
                     var extension = Path.GetExtension(file.FileName);
+
+                    //deleting the previous image during update
+                    if (obj.Product.ImageUrl != null) { 
+                    
+                        var oldImagePath= Path.Combine(wwwRootPath,obj.Product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath)) { 
+                            System.IO.File.Delete(oldImagePath);
+                        
+                        }
+                    }
+
 
                     //copying the image from the specified location
                     using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
@@ -134,10 +123,21 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
                         file.CopyTo(fileStreams);
 
                         //updating the image URl
-                        obj.Product.ImageUrl = @"\images\products" + fileName + extension;
+                        obj.Product.ImageUrl = @"\images\products\" + fileName + extension;
 
                     }
-                    _unitOfWork.Product.Add(obj.Product);
+
+                    //Add Part 
+                    if (obj.Product.Id == 0)
+                    {
+
+                        _unitOfWork.Product.Add(obj.Product);
+
+                    }
+                    else
+                    {
+                        _unitOfWork.Product.Update(obj.Product);
+                    }
 
 
                     _unitOfWork.Save();
@@ -157,54 +157,33 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
 
         //For Edit Below
         //Get
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
+        //public IActionResult Delete(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
 
-            }
+        //    }
 
-            //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
+        //    //  var categoryFromDB = _db.Categories.Find(id);//it will try to find it
 
-            var ProductFromDBFirst = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
-            //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
+        //    var ProductFromDBFirst = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
+        //    //  var categoryFromDBSingle = _db.Categories.SingleOrDefault(x => x.Id == id);
 
-            if (ProductFromDBFirst == null)
-            {
+        //    if (ProductFromDBFirst == null)
+        //    {
 
-                return NotFound();
-            }
+        //        return NotFound();
+        //    }
 
-            return View(ProductFromDBFirst);
-        }
-
-
+        //    return View(ProductFromDBFirst);
+        //}
 
 
 
-        ////Post
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(int? id)
-        {
-            //var obj= _db.Categories.Find(id); before repository pattern
 
-            var obj = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
-            if (obj == null)
-            {
 
-                return NotFound();
-            }
-
-            // _db.Remove(obj);
-            _unitOfWork.Product.Delete(obj);
-            _unitOfWork.Save();
-            TempData["success"] = "Product deleted Successfully!";
-            return RedirectToAction("Index");
-
-        }
-
+       
 
 
         #region API CALLS
@@ -218,6 +197,47 @@ namespace BetterBooksWeb.Areas.Admin.Controllers
             return Json(new { data = productList });
 
         }
+
+
+        ////Post
+        [HttpDelete]
+       
+        public IActionResult Delete(int? id)
+        {
+            //var obj= _db.Categories.Find(id); before repository pattern
+
+            var obj = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);//it will fetch the first record and check with our given record 'id', 
+            if (obj == null)
+            {
+
+                return Json(new
+                {
+                    success=false,message="Error while deleting!"
+                });
+            }
+
+            //Deleting the old image with record
+            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
+
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+
+            }
+
+
+            // _db.Remove(obj);
+            _unitOfWork.Product.Remove(obj);
+            _unitOfWork.Save();
+
+            return Json(new
+            {
+                success = true,
+                message = "Delete Successful!"
+            });
+
+        }
+
         #endregion
 
     }

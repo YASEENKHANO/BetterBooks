@@ -37,11 +37,11 @@ namespace BetterBooks.DataAccess.Repository
                 objFromDB.CategoryId= obj.CategoryId;
                 objFromDB.CoverTypeId= obj.CoverTypeId;
 
-                //cond for image, if user explicitly want to update image
+                //condition for image, if user explicitly want to update image
 
                 if (objFromDB.ImageUrl != null)
                 {
-                    objFromDB.ImageUrl= objFromDB.ImageUrl;
+                    objFromDB.ImageUrl= obj.ImageUrl;//here it was objFromDB.ImageUrl which was making a mess
                 }
 
             }
