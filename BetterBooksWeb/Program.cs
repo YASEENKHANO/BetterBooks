@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
 using BetterBooks.DataAccess.DbInitializer;
 
-
+//Connection string saved
+//Server= DESKTOP-LFIUSB6\\SQLEXPRESS; Database=BBooks1; Trusted_Connection=True;TrustServerCertificate=True;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
