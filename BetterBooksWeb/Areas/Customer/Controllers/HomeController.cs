@@ -1,8 +1,11 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using BetterBooks.DataAccess.Repository.IRepository;
 using BetterBooks.Models;
 using BetterBooks.Models.ViewModels;
+using BetterBooks.Utitlity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -29,17 +32,66 @@ namespace BetterBooksWeb.Areas.Customer.Controllers
             return View(productList);
         }
 
-        public IActionResult Details(int id)
+        public IActionResult Details(int productId)
         {
             //retrive one of the Products using ShoppingCart View model
             ShoppingCart cartObj = new() {
-                Count = 2,
-                Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id, includeProperties: "Category,CoverType")
+                Count = 1,
+                ProductId = productId,
+                Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties: "Category,CoverType")
             };
 
 
             return View(cartObj);
         }
+
+
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        [Authorize]
+
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            shoppingCart.ApplicationUserId = claim.Value;
+
+            //trying to append the previous value in the shoping cart based on new count
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.GetFirstOrDefault(u => u.ApplicationUserId == claim.Value && u.ProductId==shoppingCart.ProductId);
+
+            if (cartFromDb == null) { 
+            
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+
+                _unitOfWork.Save();
+
+                //here we are storing the count of the shopping cart in the session
+                //for every set session we will have a get session
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count);
+                //we will show the count of the shopping cart in the navbar in the _layout.cshtml
+
+            }
+            else
+            {
+                _unitOfWork.ShoppingCart.IncrementCount(cartFromDb, shoppingCart.Count);
+            }
+
+
+           
+            _unitOfWork.Save();
+
+
+          //  return RedirectToAction("Index"); //It is using Magic string as Index
+
+            return RedirectToAction(nameof(Index)); //here we are using nameof 'a helper method'
+        }
+
+
+
+
 
         public IActionResult Privacy()
         {

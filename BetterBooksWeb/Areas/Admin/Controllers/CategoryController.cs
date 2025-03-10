@@ -2,12 +2,15 @@
 using BetterBooks.DataAccess.Repository;
 using BetterBooks.DataAccess.Repository.IRepository;
 using BetterBooks.Models;
+using BetterBooks.Utitlity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BetterBooksWeb.Areas.Admin.Controllers
 {
 
     [Area("Admin")] // explicitly specifying the controller route
+    [Authorize(Roles =SD.Role_Admin)]
     public class CategoryController : Controller
     {
 

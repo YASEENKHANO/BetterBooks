@@ -16,7 +16,16 @@ namespace BetterBooks.DataAccess.Repository
         public Repository(ApplicationDbContext db)
         {
             _db = db;
-           // _db.Products.Include(x => x.Category).Include(x => x.CoverType); //navigation property of category to be loaded
+
+            //For no tracking purpose
+            //_db.ShoppingCarts.AsNoTracking().FirstOrDefault();
+            //_db.ShoppingCarts.AsNoTracking().Where();
+
+
+
+
+
+         //   _db.Products.Include(x => x.Category).Include(x => x.CoverType); //navigation property of category to be loaded and also we can use this to check wheather our include property in controller is Ok Or Not
 
             this.dbSet= _db.Set<T>();//implementing solid repository
         }
@@ -37,18 +46,20 @@ namespace BetterBooks.DataAccess.Repository
             dbSet.Remove(entity);
         }
 
-        public void DeleteRange(IEnumerable<T> entity)
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        //includeProp - "Category,Covertype"
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        //includeProp - "Category,Covertype" & the filter to get all the products of one user
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter= null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-
-            //for include prop
-            if(includeProperties != null)
+            if(filter != null)
+            {
+            
+                query = query.Where(filter); //for shopping cart we are filtering
+          
+            }
+           //for include prop
+            if (includeProperties != null)
             {
                 //if it having something split it
                 foreach(var includeProp in includeProperties.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries)){
@@ -60,13 +71,21 @@ namespace BetterBooks.DataAccess.Repository
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = true)
         {
 
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query;
 
+            if (tracked)
+            {
 
-
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
+        
             query = query.Where(filter);
 
             if (includeProperties != null)

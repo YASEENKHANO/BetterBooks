@@ -13,16 +13,15 @@ namespace BetterBooks.DataAccess.Repository.IRepository
         //This is A Generic repository
         // T suppose for now is Category
 
-        T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null);
-        IEnumerable<T> GetAll(string? includeProperties = null);
+        T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked= true);
+        IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter=null, string? includeProperties = null);
 
         void Add(T entity);
        // void Update(T entity);
         void Delete(T entity);
 
         public void Remove(T entity);
-        
-        void DeleteRange(IEnumerable<T> entity);
+       
 
 
 

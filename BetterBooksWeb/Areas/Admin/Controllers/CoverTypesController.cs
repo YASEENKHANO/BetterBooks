@@ -1,10 +1,13 @@
 ﻿using BetterBooks.DataAccess.Repository.IRepository;
 using BetterBooks.Models;
+using BetterBooks.Utitlity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BetterBooksWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CoverTypesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
